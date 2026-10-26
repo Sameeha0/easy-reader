@@ -2,6 +2,15 @@
 
 **A simple phone app for older people to open documents and scan QR codes, with big text and big buttons.**
 
+## Download (Android)
+
+| Phone | File |
+| --- | --- |
+| Most phones (2017 and newer) | **[EasyReader.apk](https://github.com/Sameeha0/easy-reader/raw/main/release/EasyReader.apk)** (19 MB) |
+| Very old phones | **[EasyReader-older-phones.apk](https://github.com/Sameeha0/easy-reader/raw/main/release/EasyReader-older-phones.apk)** (16 MB) |
+
+Both files are also in the [`release`](release) folder above and on the [Releases page](https://github.com/Sameeha0/easy-reader/releases/latest). Install steps are [below](#install-it-android).
+
 <p>
   <img src="docs/home.jpg" width="260" alt="Easy Reader home screen">
   &nbsp;
@@ -30,9 +39,9 @@ Easy Reader does just two things and tries to make them impossible to get wrong:
 
 ## Install it (Android)
 
-1. Go to the [Releases page](../../releases/latest) on the phone.
-2. Download **`EasyReader.apk`**. For a very old phone that won't install it, use **`EasyReader-older-phones.apk`**.
-3. Tap the downloaded file. If the phone asks, allow "Install unknown apps" for your browser.
+1. On the phone, open this page and tap **EasyReader.apk** in the [Download](#download-android) table at the top. For a very old phone that won't install it, use **EasyReader-older-phones.apk**.
+2. When the download finishes, tap the file.
+3. If the phone asks, allow "Install unknown apps" for your browser. (It shows this warning because the app isn't from the Play Store.)
 4. Open **Easy Reader** from the home screen.
 
 The first time "Scan a QR code" is used, the phone needs internet once to get Google's QR scanner. After that it works offline.
@@ -75,3 +84,7 @@ flutter build apk --release --split-per-abi   # APKs end up in build/app/outputs
 ```
 
 After changing the logo in `assets/logo/`, run `dart run flutter_launcher_icons`.
+
+## License
+
+Easy Reader is free and open source under the [MIT License](LICENSE). The bundled fonts use the SIL Open Font License, and the document viewer libraries in `assets/viewer/` keep their own licenses.
