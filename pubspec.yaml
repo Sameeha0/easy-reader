@@ -1,0 +1,42 @@
+name: easy_reader
+description: Big, simple reader for PDF, Word, Excel, PowerPoint + QR scanner.
+publish_to: none
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.4.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  file_picker: ^13.3.0
+  pdfx: ^2.8.0
+  mobile_scanner: ^7.4.2
+  url_launcher: ^6.3.0
+  webview_flutter: ^4.14.1
+  shared_preferences: ^2.5.6
+  path_provider: ^2.1.6
+
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/viewer/
+    - assets/logo/logo.png
+  fonts:
+    - family: Bricolage
+      fonts:
+        - asset: assets/fonts/BricolageGrotesque.ttf
+    - family: Figtree
+      fonts:
+        - asset: assets/fonts/Figtree.ttf
+dev_dependencies:
+  flutter_launcher_icons: ^0.14.4
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/logo/icon.png
+  adaptive_icon_background: "#1A2868"
+  adaptive_icon_foreground: assets/logo/icon_android.png
+  remove_alpha_ios: true

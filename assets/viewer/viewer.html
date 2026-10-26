@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body { margin: 0; background: #F7F1E3; font-family: -apple-system, Roboto, sans-serif; color: #14183A; }
+  #out { padding: 12px; }
+  /* Word: let the text flow to the phone width, keep pictures inside the screen */
+  .docx-wrapper { background: none !important; padding: 0 !important; }
+  .docx-wrapper > section.docx { padding: 20px !important; margin: 0 0 12px !important; border-radius: 16px;
+    border: 2px solid #1A2868; box-shadow: 0 4px 0 #1A2868; min-height: 0 !important; width: 100% !important; }
+  /* a wide picture used to stretch the page past the screen edge */
+  section.docx * { max-width: 100%; }
+  section.docx img { height: auto !important; }
+  img, svg { max-width: 100%; height: auto; }
+  /* PowerPoint slides */
+  /* show every slide one under the other (the library makes a box only one slide tall) */
+  .pptx-preview-wrapper { background: none !important; height: auto !important; overflow: visible !important; }
+  .pptx-preview-slide-wrapper { border-radius: 12px; border: 2px solid #1A2868; box-shadow: 0 4px 0 #1A2868; margin-bottom: 14px !important; }
+  /* Excel */
+  .tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 12px; }
+  .tabs button { font-size: 18px; padding: 12px 18px; border-radius: 12px; border: 2px solid #1A2868;
+    background: #fff; color: #1A2868; font-weight: bold; white-space: nowrap; }
+  .tabs button.on { background: #1A2868; color: #F0C030; }
+  .sheet { display: inline-block; max-width: 100%; overflow-x: auto; background: #fff; border-radius: 16px; border: 2px solid #1A2868; box-shadow: 0 4px 0 #1A2868; }
+  table { border-collapse: collapse; font-size: 18px; }
+  td { border: 1px solid #DDD8CC; padding: 8px 10px; white-space: nowrap; }
+  tr:first-child td { background: #FBEFC4; font-weight: bold; }
+  .msg { font-size: 22px; text-align: center; padding: 40px 20px; }
+</style>
+<script src="jszip.min.js"></script>
+<script src="docx-preview.min.js"></script>
+<script src="xlsx.full.min.js"></script>
+<script src="pptx-preview.umd.js"></script>
+</head>
+<body>
+<div id="out"><div class="msg">Opening your file…</div></div>
+<script>
+  const out = document.getElementById('out');
+
+  // Flutter calls this with the file as base64 text
+  async function openFile(base64, type) {
+    const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+    out.innerHTML = '';
+    // some broken files make the libraries wait forever, so give up after 20 seconds
+    const tooSlow = new Promise((_, fail) => setTimeout(() => fail('timeout'), 20000));
+    try {
+      await Promise.race([draw(bytes, type), tooSlow]);
+    } catch (e) {
+      out.innerHTML = '<div class="msg">Sorry, this file could not be opened.</div>';
+    }
+  }
+
+  async function draw(bytes, type) {
+    if (type === 'docx') {
+      await docx.renderAsync(bytes, out, null, { ignoreWidth: true, ignoreHeight: true, breakPages: true });
+    } else if (type === 'pptx') {
+      const width = out.clientWidth - 24; // minus the padding
+      const viewer = pptxPreview.init(out, { width: width, height: Math.round(width * 9 / 16), mode: 'list' });
+      await viewer.preview(bytes.buffer);
+    } else if (type === 'xlsx') {
+      showExcel(XLSX.read(bytes, { type: 'array' }));
+    }
+  }
+
+  function showExcel(book) {
+    const tabs = book.SheetNames.length > 1 ? '<div class="tabs"></div>' : '';
+    out.innerHTML = tabs + '<div class="sheet"></div>';
+    const show = (i) => {
+      out.querySelector('.sheet').innerHTML = XLSX.utils.sheet_to_html(book.Sheets[book.SheetNames[i]], { header: '', footer: '' });
+      out.querySelectorAll('.tabs button').forEach((b, j) => b.className = j === i ? 'on' : '');
+    };
+    book.SheetNames.forEach((name, i) => {
+      if (!tabs) return;
+      const b = document.createElement('button');
+      b.textContent = name;
+      b.onclick = () => show(i);
+      out.querySelector('.tabs').appendChild(b);
+    });
+    show(0);
+  }
+
+  // the Smaller / Bigger buttons
+  function setZoom(z) { out.style.zoom = z; }
+</script>
+</body>
+</html>
